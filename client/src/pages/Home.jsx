@@ -1,5 +1,6 @@
 import React from "react";
 import headerImg from "../assets/assets_frontend/header_img.png";
+import Speciality from "../components/Speciality";
 
 function Home() {
   return (
