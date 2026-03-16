@@ -1,54 +1,67 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 import derm from "../assets/assets_frontend/Dermatologist.svg";
-import gyeno from "../assets/assets_frontend/Gynecologist.svg";
 import neuro from "../assets/assets_frontend/Neurologist.svg";
 import pediatric from "../assets/assets_frontend/Pediatricians.svg";
 import gastro from "../assets/assets_frontend/Gastroenterologist.svg";
 import general from "../assets/assets_frontend/General_physician.svg";
+import gyno from "../assets/assets_frontend/Gynecologist.svg";
 
-function Speciality() {
+function Speciality(){
 
-  const specialityData = [
-    { name: "Dermatologist", img: derm },
-    { name: "Gynecologist", img: gyeno },
-    { name: "Neurologist", img: neuro },
-    { name: "Pediatrician", img: pediatric },
-    { name: "Gastroenterologist", img: gastro },
-    { name: "General physician", img: general }
-  ];
+const specialityData = [
 
-  return (
-    <div className="container mt-5 text-center">
+{ name:"Dermatologist", img:derm },
+{ name:"Neurologist", img:neuro },
+{ name:"Pediatrician", img:pediatric },
+{ name:"Gastroenterologist", img:gastro },
+{ name:"General Physician", img:general },
+{ name:"Gynecologist", img:gyno }
 
-      <h2 className="mb-4">Find by Speciality</h2>
+];
 
-      <div className="row">
+return(
 
-        {specialityData.map((item, index) => (
+<div className="container mt-5 text-center">
 
-          <div className="col-md-2 col-6 mb-4" key={index}>
+<h2 className="mb-4">Find by Speciality</h2>
 
-            <div className="p-3 border rounded shadow-sm">
+<div className="row justify-content-center">
 
-              <img
-                src={item.img}
-                alt="speciality"
-                style={{ width: "60px" }}
-              />
+{specialityData.map((item,index)=>(
 
-              <p className="mt-2">{item.name}</p>
+<div className="col-md-2 col-6 mb-4" key={index}>
 
-            </div>
+<Link
+to={`/doctors?search=${item.name}`}
+style={{textDecoration:"none",color:"inherit"}}
+>
 
-          </div>
+<div className="p-3 border rounded shadow-sm">
 
-        ))}
+<img
+src={item.img}
+alt="speciality"
+style={{width:"60px"}}
+/>
 
-      </div>
+<p className="mt-2">{item.name}</p>
 
-    </div>
-  );
+</div>
+
+</Link>
+
+</div>
+
+))}
+
+</div>
+
+</div>
+
+)
+
 }
 
 export default Speciality;
