@@ -1,7 +1,7 @@
 import React from "react";
 
 import derm from "../assets/assets_frontend/Dermatologist.svg";
-import cardio from "../assets/assets_frontend/Cardiologist.svg";
+import gyeno from "../assets/assets_frontend/Gynecologist.svg";
 import neuro from "../assets/assets_frontend/Neurologist.svg";
 import pediatric from "../assets/assets_frontend/Pediatricians.svg";
 import gastro from "../assets/assets_frontend/Gastroenterologist.svg";
@@ -11,7 +11,7 @@ function Speciality() {
 
   const specialityData = [
     { name: "Dermatologist", img: derm },
-    { name: "Cardiologist", img: cardio },
+    { name: "Gynecologist", img: gyeno },
     { name: "Neurologist", img: neuro },
     { name: "Pediatrician", img: pediatric },
     { name: "Gastroenterologist", img: gastro },
