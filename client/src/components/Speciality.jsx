@@ -8,60 +8,59 @@ import gastro from "../assets/assets_frontend/Gastroenterologist.svg";
 import general from "../assets/assets_frontend/General_physician.svg";
 import gyno from "../assets/assets_frontend/Gynecologist.svg";
 
-function Speciality(){
+function Speciality() {
 
-const specialityData = [
+    const specialityData = [
 
-{ name:"Dermatologist", img:derm },
-{ name:"Neurologist", img:neuro },
-{ name:"Pediatrician", img:pediatric },
-{ name:"Gastroenterologist", img:gastro },
-{ name:"General Physician", img:general },
-{ name:"Gynecologist", img:gyno }
+        { name: "Dermatologist", img: derm },
+        { name: "Neurologist", img: neuro },
+        { name: "Pediatrician", img: pediatric },
+        { name: "Gastroenterologist", img: gastro },
+        { name: "General Physician", img: general },
+        { name: "Gynecologist", img: gyno }
 
-];
+    ];
 
-return(
+    return (
 
-<div className="container mt-5 text-center">
+        <div className="container mt-5 text-center">
 
-<h2 className="mb-4">Find by Speciality</h2>
+            <h2 className="mb-4">Find by Speciality</h2>
 
-<div className="row justify-content-center">
+            <div className="row justify-content-center">
 
-{specialityData.map((item,index)=>(
+                {specialityData.map((item, index) => (
 
-<div className="col-md-2 col-6 mb-4" key={index}>
+                    <div className="col-md-2 col-6 mb-4" key={index}>
 
-<Link
-to={`/doctors?search=${item.name}`}
-style={{textDecoration:"none",color:"inherit"}}
->
+                        <Link
+                            to={`/doctors?search=${item.name}`}
+                            style={{ textDecoration: "none", color: "inherit" }}
+                        >
 
-<div className="p-3 border rounded shadow-sm">
+                            <div className="p-3 border rounded shadow-sm">
 
-<img
-src={item.img}
-alt="speciality"
-style={{width:"60px"}}
-/>
+                                <img
+                                    src={item.img}
+                                    alt="speciality"
+                                    style={{ width: "60px" }}
+                                />
 
-<p className="mt-2">{item.name}</p>
+                                <p className="mt-2">{item.name}</p>
 
-</div>
+                            </div>
 
-</Link>
+                        </Link>
 
-</div>
+                    </div>
 
-))}
+                ))}
 
-</div>
+            </div>
 
-</div>
+        </div>
 
-)
-
+    )
 }
 
 export default Speciality;
