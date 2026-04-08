@@ -39,7 +39,7 @@ function Navbar() {
             Home
           </Link>
 
-           <Link className="nav-link me-4 fw-medium" to="/doctors">
+          <Link className="nav-link me-4 fw-medium" to="/doctors">
             Doctors
           </Link>
 
