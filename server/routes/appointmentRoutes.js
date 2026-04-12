@@ -42,7 +42,12 @@ router.get("/", async (req, res) => {
 
 try {
 
-const appointments = await Appointment.find();
+const { patientId, doctorId } = req.query;
+let query = {};
+if (patientId) query.patientId = patientId;
+if (doctorId) query.doctorId = doctorId;
+
+const appointments = await Appointment.find(query);
 
 res.json(appointments);
 
