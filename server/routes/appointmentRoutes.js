@@ -6,7 +6,6 @@ const Appointment = require("../models/Appointment");
 
 // ===============================
 // Book Appointment
-// POST /api/appointments
 // ===============================
 
 router.post("/", async (req, res) => {
@@ -35,7 +34,6 @@ details: err
 
 // ===============================
 // Get All Appointments
-// GET /api/appointments
 // ===============================
 
 router.get("/", async (req, res) => {
@@ -65,7 +63,6 @@ details: err
 
 // ===============================
 // Cancel Appointment
-// DELETE /api/appointments/:id
 // ===============================
 
 router.delete("/:id", async (req, res) => {
