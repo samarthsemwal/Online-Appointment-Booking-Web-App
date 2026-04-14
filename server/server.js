@@ -7,6 +7,7 @@ const { Server } = require("socket.io");
 const appointmentRoutes = require("./routes/appointmentRoutes");
 const authRoutes = require("./routes/authRoutes");
 const doctorRoutes = require("./routes/doctorRoutes");
+const predictionRoutes = require("./routes/predictionRoutes");
 
 const app = express();
 const server = http.createServer(app);
@@ -30,6 +31,7 @@ mongoose.connect("mongodb://127.0.0.1:27017/doctorApp")
 app.use("/api/auth",authRoutes);
 app.use("/api/appointments",appointmentRoutes);
 app.use("/api/doctors",doctorRoutes);
+app.use("/api/predict", predictionRoutes);
 
 /* Socket.IO */
 io.on("connection", (socket) => {
