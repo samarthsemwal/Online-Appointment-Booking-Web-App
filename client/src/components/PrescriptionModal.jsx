@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
+import { API_BASE_URL } from "../config";
 
 function PrescriptionModal({ appointmentId, isDoctor, onSuccess, onClose }) {
   const [loading, setLoading] = useState(false);
@@ -18,7 +19,7 @@ function PrescriptionModal({ appointmentId, isDoctor, onSuccess, onClose }) {
     const token = localStorage.getItem("token");
     if (!token || !appointmentId) return;
 
-    fetch(`http://localhost:5001/api/prescriptions/appointment/${appointmentId}`, {
+    fetch(`${API_BASE_URL}/api/prescriptions/appointment/${appointmentId}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then((res) => (res.ok ? res.json() : null))
@@ -65,7 +66,7 @@ function PrescriptionModal({ appointmentId, isDoctor, onSuccess, onClose }) {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5001/api/prescriptions", {
+      const res = await fetch(`${API_BASE_URL}/api/prescriptions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

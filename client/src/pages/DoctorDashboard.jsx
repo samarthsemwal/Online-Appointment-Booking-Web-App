@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import PrescriptionModal from "../components/PrescriptionModal";
+import { API_BASE_URL } from "../config";
 
 function DoctorDashboard() {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ function DoctorDashboard() {
     setDoctorUser(user);
 
     try {
-      const res = await fetch("http://localhost:5001/api/appointments/doctor", {
+      const res = await fetch(`${API_BASE_URL}/api/appointments/doctor`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();

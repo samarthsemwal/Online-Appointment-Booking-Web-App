@@ -6,6 +6,7 @@ import doc3 from "../assets/assets_frontend/doc3.png";
 import doc4 from "../assets/assets_frontend/doc4.png";
 import doc5 from "../assets/assets_frontend/doc5.png";
 import doc6 from "../assets/assets_frontend/doc6.png";
+import { API_BASE_URL } from "../config";
 
 function TopDoctors() {
   const [doctors, setDoctors] = useState([]);
@@ -21,7 +22,7 @@ function TopDoctors() {
   ];
 
   useEffect(() => {
-    fetch("http://localhost:5001/api/doctors")
+    fetch(`${API_BASE_URL}/api/doctors`)
       .then((res) => {
         if (!res.ok) throw new Error("API Offline");
         return res.json();

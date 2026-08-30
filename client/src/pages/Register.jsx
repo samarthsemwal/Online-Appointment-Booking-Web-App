@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { API_BASE_URL } from "../config";
 
 function Register() {
   const navigate = useNavigate();
@@ -19,16 +20,18 @@ function Register() {
   const [experienceYears, setExperienceYears] = useState(5);
   const [qualifications, setQualifications] = useState("MBBS, MD");
   const [location, setLocation] = useState("New Delhi");
+  const [hospital, setHospital] = useState("Apollo Telehealth Center");
 
   // Patient Fields
   const [age, setAge] = useState(28);
   const [gender, setGender] = useState("Male");
   const [bloodGroup, setBloodGroup] = useState("O+");
+  const [allergies, setAllergies] = useState("");
 
   const handleRegister = async (e) => {
     e.preventDefault();
     if (!name || !email || !password) {
-      toast.error("Please fill in all required fields.");
+      toast.error("Please fill in all mandatory fields (Name, Email, Password).");
       return;
     }
 
@@ -52,16 +55,18 @@ function Register() {
               consultationFee: Number(consultationFee),
               experienceYears: Number(experienceYears),
               qualifications,
-              location
+              location,
+              hospital
             }
           : {
               age: Number(age),
               gender,
-              bloodGroup
+              bloodGroup,
+              allergies: allergies ? allergies.split(",").map((a) => a.trim()) : []
             })
       };
 
-      const res = await fetch("http://localhost:5001/api/auth/register", {
+      const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
