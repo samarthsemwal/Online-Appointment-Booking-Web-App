@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import PrescriptionModal from "../components/PrescriptionModal";
+import { API_BASE_URL } from "../config";
 
 function Appointments() {
   const navigate = useNavigate();
@@ -17,18 +18,18 @@ function Appointments() {
     }
 
     try {
-      const res = await fetch("http://localhost:5001/api/appointments/my", {
+      const res = await fetch(`${API_BASE_URL}/api/appointments/my`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
       if (res.ok) {
         setAppointments(Array.isArray(data) ? data : []);
       } else {
-        toast.error(data.error || "Failed to fetch appointments.");
+        toast.error(data.error || `Failed to fetch appointments.`);
       }
     } catch (err) {
       console.error(err);
-      toast.error("Network error while fetching appointments.");
+      toast.error(`Network error while fetching appointments.`);
     } finally {
       setLoading(false);
     }
@@ -40,37 +41,37 @@ function Appointments() {
 
   // Handle Cancel Appointment (Frees Slot in Compound Index)
   const handleCancel = async (id) => {
-    if (!window.confirm("Are you sure you want to cancel this consultation? Your slot will be released.")) {
+    if (!window.confirm(`Are you sure you want to cancel this consultation? Your slot will be released.`)) {
       return;
     }
 
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem(`token`);
     try {
-      const res = await fetch(`http://localhost:5001/api/appointments/${id}`, {
-        method: "DELETE",
+      const res = await fetch(`${API_BASE_URL}/api/appointments/${id}`, {
+        method: `DELETE`,
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
       if (res.ok) {
-        toast.success("Appointment cancelled. Slot has been freed up.");
-        setAppointments(appointments.map((a) => (a._id === id ? { ...a, status: "cancelled" } : a)));
+        toast.success(`Appointment cancelled. Slot has been freed up.`);
+        setAppointments(appointments.map((a) => (a._id === id ? { ...a, status: `cancelled` } : a)));
       } else {
-        toast.error(data.error || "Failed to cancel appointment.");
+        toast.error(data.error || `Failed to cancel appointment.`);
       }
     } catch (err) {
-      toast.error("Error cancelling appointment.");
+      toast.error(`Error cancelling appointment.`);
     }
   };
 
   // Handle Razorpay Payment for Pending Appointments
   const handlePayNow = async (app) => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem(`token`);
     try {
-      toast.info("Generating Razorpay checkout order...");
-      const orderRes = await fetch("http://localhost:5001/api/payments/create-order", {
-        method: "POST",
+      toast.info(`Generating Razorpay checkout order...`);
+      const orderRes = await fetch(`${API_BASE_URL}/api/payments/create-order`, {
+        method: `POST`,
         headers: {
-          "Content-Type": "application/json",
+          `Content-Type`: `application/json`,
           Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({ appointmentId: app._id })
@@ -80,8 +81,8 @@ function Appointments() {
       if (!orderRes.ok) throw new Error(orderData.error);
 
       // Verify HMAC signature
-      const verifyRes = await fetch("http://localhost:5001/api/payments/verify", {
-        method: "POST",
+      const verifyRes = await fetch(`${API_BASE_URL}/api/payments/verify`, {
+        method: `POST`,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`

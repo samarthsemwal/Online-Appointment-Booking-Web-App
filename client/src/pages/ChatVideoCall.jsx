@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import { toast } from "react-toastify";
 import PrescriptionModal from "../components/PrescriptionModal";
+import { API_BASE_URL } from "../config";
 
 let socket;
 
@@ -56,7 +57,7 @@ function ChatVideoCall() {
     setUser(parsedUser);
 
     // 1. Fetch Appointment Details & Verify Participant
-    fetch(`http://localhost:5001/api/appointments/${appointmentId}`, {
+    fetch(`${API_BASE_URL}/api/appointments/${appointmentId}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then((res) => (res.ok ? res.json() : null))
@@ -68,7 +69,7 @@ function ChatVideoCall() {
       .catch(() => {});
 
     // 2. Fetch Persisted Chat History from MongoDB
-    fetch(`http://localhost:5001/api/chat/${appointmentId}`, {
+    fetch(`${API_BASE_URL}/api/chat/${appointmentId}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then((res) => (res.ok ? res.json() : null))
@@ -80,7 +81,7 @@ function ChatVideoCall() {
       .catch((err) => console.log("Chat history fetch:", err));
 
     // 3. Initialize Socket.IO connection
-    socket = io("http://localhost:5001");
+    socket = io(API_BASE_URL);
 
     const roomId = `room_${appointmentId}`;
     socket.emit("join-room", roomId);

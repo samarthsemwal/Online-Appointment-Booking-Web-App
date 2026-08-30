@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import { API_BASE_URL } from "../config";
 
 function HeartDisease() {
   const [formData, setFormData] = useState({
@@ -70,7 +71,7 @@ function HeartDisease() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5001/api/predict/heart-disease", {
+      const res = await fetch(`${API_BASE_URL}/api/predict/heart-disease`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData)

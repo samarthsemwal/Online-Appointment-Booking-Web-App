@@ -6,6 +6,7 @@ import doc3 from "../assets/assets_frontend/doc3.png";
 import doc4 from "../assets/assets_frontend/doc4.png";
 import doc5 from "../assets/assets_frontend/doc5.png";
 import doc6 from "../assets/assets_frontend/doc6.png";
+import { API_BASE_URL } from "../config";
 
 function Doctors() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -38,7 +39,7 @@ function Doctors() {
 
   useEffect(() => {
     const specialityQuery = selectedSpeciality !== "All" ? `?speciality=${encodeURIComponent(selectedSpeciality)}` : "";
-    fetch(`http://localhost:5001/api/doctors${specialityQuery}`)
+    fetch(`${API_BASE_URL}/api/doctors${specialityQuery}`)
       .then((res) => {
         if (!res.ok) throw new Error("Network response was not ok");
         return res.json();

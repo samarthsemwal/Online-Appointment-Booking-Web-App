@@ -8,6 +8,7 @@ import doc4 from "../assets/assets_frontend/doc4.png";
 import doc5 from "../assets/assets_frontend/doc5.png";
 import doc6 from "../assets/assets_frontend/doc6.png";
 import verifiedIcon from "../assets/assets_frontend/verified_icon.svg";
+import { API_BASE_URL } from "../config";
 
 function DoctorDetails() {
   const { id } = useParams();
@@ -57,7 +58,7 @@ function DoctorDetails() {
   };
 
   useEffect(() => {
-    fetch(`http://localhost:5001/api/doctors/${id}`)
+    fetch(`${API_BASE_URL}/api/doctors/${id}`)
       .then((res) => {
         if (!res.ok) throw new Error("Doctor not found");
         return res.json();
@@ -108,62 +109,55 @@ function DoctorDetails() {
 
     try {
       // 1. Create Appointment via API (Protected by Compound Unique Index)
-      const bookRes = await fetch("http://localhost:5001/api/appointments", {
+      const bookRes = await fetch(`${API_BASE_URL}/api/appointments`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({
-          doctorId: doctor._id || id,
+          doctorId: doctor._id,
+          doctorProfileId: doctor.doctorId || doctor._id,
           date: selectedDate,
           timeSlot: selectedSlot,
-          symptoms: symptoms || "General Consultation",
-          fee: doctor.fee || doctor.consultationFee || 500
+          symptoms: symptoms
         })
       });
 
       const bookData = await bookRes.json();
 
-      // Check if slot was double booked
-      if (bookRes.status === 409) {
-        toast.error("Double-Booking Prevented: This doctor is already booked for this slot. Please choose another time.");
-        setBookingLoading(false);
-        return;
-      }
-
       if (!bookRes.ok) {
-        throw new Error(bookData.error || "Failed to book appointment");
+        throw new Error(bookData.error || "Failed to schedule appointment slot.");
       }
 
-      const appointmentId = bookData.appointment._id;
-      toast.success("Appointment slot reserved! Launching Razorpay checkout...");
+      const createdAppointment = bookData.appointment;
 
       // 2. Create Razorpay Order
       setIsProcessingPayment(true);
-      const orderRes = await fetch("http://localhost:5001/api/payments/create-order", {
+      const orderRes = await fetch(`${API_BASE_URL}/api/payments/create-order`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ appointmentId })
+        body: JSON.stringify({ appointmentId: createdAppointment._id })
       });
 
       const orderData = await orderRes.json();
 
       if (orderRes.ok && orderData.success) {
         // 3. Verify Razorpay Payment (Simulated / Live HMAC-SHA256)
-        const verifyRes = await fetch("http://localhost:5001/api/payments/verify", {
+        const verifyRes = await fetch(`${API_BASE_URL}/api/payments/verify`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`
           },
           body: JSON.stringify({
-            appointmentId,
-            razorpay_order_id: orderData.order.id,
-            isDemoMock: true
+            order_id: orderData.orderId,
+            payment_id: `pay_${Date.now()}`,
+            razorpay_signature: "simulated_hmac_valid_signature",
+            appointmentId: createdAppointment._id
           })
         });
 
