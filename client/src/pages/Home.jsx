@@ -70,46 +70,7 @@ function Home() {
         </div>
       </section>
 
-      {/* ============================================================ */}
-      {/* KEY PLATFORM PILLARS                                         */}
-      {/* ============================================================ */}
-      <section className="container mb-5">
-        <div className="row g-4">
-          <div className="col-md-4">
-            <div className="custom-card p-4 h-100 d-flex gap-3">
-              <div className="fs-1">🛡️</div>
-              <div>
-                <h5 className="fw-bold mb-1">Guaranteed No Double-Booking</h5>
-                <p className="text-muted small mb-0">
-                  Database-level compound unique indexing prevents scheduling conflicts under high concurrent load.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-4">
-            <div className="custom-card p-4 h-100 d-flex gap-3">
-              <div className="fs-1">📹</div>
-              <div>
-                <h5 className="fw-bold mb-1">Encrypted WebRTC & Live Chat</h5>
-                <p className="text-muted small mb-0">
-                  Direct peer-to-peer HD video call with persisted MongoDB consultation chat history.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-4">
-            <div className="custom-card p-4 h-100 d-flex gap-3">
-              <div className="fs-1">💳</div>
-              <div>
-                <h5 className="fw-bold mb-1">Razorpay HMAC-SHA256</h5>
-                <p className="text-muted small mb-0">
-                  Bank-grade server-side signature verification with instant digital receipts and confirmation.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+
 
       {/* ============================================================ */}
       {/* FIND BY SPECIALITY                                           */}
