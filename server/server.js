@@ -123,7 +123,7 @@ async function seedDefaultDataIfEmpty() {
         const u = await User.create({
           name: doc.name,
           email: doc.email,
-          password: hashedPassword,
+          password: "password123",
           role: "doctor",
           phone: "+91 98765 43210"
         });
@@ -143,7 +143,7 @@ async function seedDefaultDataIfEmpty() {
       const p = await User.create({
         name: "Rahul Sharma",
         email: "rahul@patient.com",
-        password: hashedPassword,
+        password: "password123",
         role: "patient",
         phone: "+91 98111 22334"
       });
@@ -288,6 +288,19 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log(`[Socket] Client disconnected: ${socket.id}`);
   });
+});
+
+const path = require("path");
+
+// Serve React Production Build directly for unified single-port hosting
+app.use(express.static(path.join(__dirname, "../client/build")));
+
+// Route all frontend routes to index.html (SPA fallback compatible with Express 5)
+app.use((req, res, next) => {
+  if (req.path.startsWith("/api") || req.path.startsWith("/socket.io")) {
+    return next();
+  }
+  res.sendFile(path.join(__dirname, "../client/build/index.html"));
 });
 
 /* Global Error Handler */
