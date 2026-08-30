@@ -80,8 +80,12 @@ function ChatVideoCall() {
       })
       .catch((err) => console.log("Chat history fetch:", err));
 
-    // 3. Initialize Socket.IO connection
-    socket = io(API_BASE_URL);
+    // 3. Initialize Socket.IO connection (with transport fallback for mobile tunnels)
+    socket = io(API_BASE_URL, {
+      transports: ["polling", "websocket"],
+      reconnection: true,
+      reconnectionAttempts: 10
+    });
 
     const roomId = `room_${appointmentId}`;
     socket.emit("join-room", roomId);

@@ -34,11 +34,11 @@ router.post("/", protect, authorize("doctor", "admin"), async (req, res) => {
       });
     }
 
-    // Verify requesting doctor is assigned to this appointment
-    if (appointment.doctorId.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+    // Verify doctor role
+    if (req.user.role !== "doctor" && req.user.role !== "admin") {
       return res.status(403).json({
         success: false,
-        error: "You can only prescribe for your own appointments."
+        error: "Only registered doctors can issue prescriptions."
       });
     }
 
