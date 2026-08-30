@@ -70,7 +70,7 @@ function HeartDisease() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/predict/heart-disease", {
+      const res = await fetch("http://localhost:5001/api/predict/heart-disease", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData)

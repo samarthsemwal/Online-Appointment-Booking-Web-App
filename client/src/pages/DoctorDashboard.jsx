@@ -23,7 +23,7 @@ function DoctorDashboard() {
     setDoctorUser(user);
 
     try {
-      const res = await fetch("http://localhost:5000/api/appointments/doctor", {
+      const res = await fetch("http://localhost:5001/api/appointments/doctor", {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();

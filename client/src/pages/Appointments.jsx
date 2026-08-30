@@ -17,7 +17,7 @@ function Appointments() {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/appointments/my", {
+      const res = await fetch("http://localhost:5001/api/appointments/my", {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
@@ -46,7 +46,7 @@ function Appointments() {
 
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch(`http://localhost:5000/api/appointments/${id}`, {
+      const res = await fetch(`http://localhost:5001/api/appointments/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -67,7 +67,7 @@ function Appointments() {
     const token = localStorage.getItem("token");
     try {
       toast.info("Generating Razorpay checkout order...");
-      const orderRes = await fetch("http://localhost:5000/api/payments/create-order", {
+      const orderRes = await fetch("http://localhost:5001/api/payments/create-order", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -80,7 +80,7 @@ function Appointments() {
       if (!orderRes.ok) throw new Error(orderData.error);
 
       // Verify HMAC signature
-      const verifyRes = await fetch("http://localhost:5000/api/payments/verify", {
+      const verifyRes = await fetch("http://localhost:5001/api/payments/verify", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

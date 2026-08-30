@@ -57,7 +57,7 @@ function DoctorDetails() {
   };
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/doctors/${id}`)
+    fetch(`http://localhost:5001/api/doctors/${id}`)
       .then((res) => {
         if (!res.ok) throw new Error("Doctor not found");
         return res.json();
@@ -108,7 +108,7 @@ function DoctorDetails() {
 
     try {
       // 1. Create Appointment via API (Protected by Compound Unique Index)
-      const bookRes = await fetch("http://localhost:5000/api/appointments", {
+      const bookRes = await fetch("http://localhost:5001/api/appointments", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -141,7 +141,7 @@ function DoctorDetails() {
 
       // 2. Create Razorpay Order
       setIsProcessingPayment(true);
-      const orderRes = await fetch("http://localhost:5000/api/payments/create-order", {
+      const orderRes = await fetch("http://localhost:5001/api/payments/create-order", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -154,7 +154,7 @@ function DoctorDetails() {
 
       if (orderRes.ok && orderData.success) {
         // 3. Verify Razorpay Payment (Simulated / Live HMAC-SHA256)
-        const verifyRes = await fetch("http://localhost:5000/api/payments/verify", {
+        const verifyRes = await fetch("http://localhost:5001/api/payments/verify", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

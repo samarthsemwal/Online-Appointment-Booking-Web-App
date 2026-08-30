@@ -21,7 +21,7 @@ function TopDoctors() {
   ];
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/doctors")
+    fetch("http://localhost:5001/api/doctors")
       .then((res) => {
         if (!res.ok) throw new Error("API Offline");
         return res.json();

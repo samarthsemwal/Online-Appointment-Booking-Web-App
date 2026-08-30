@@ -18,7 +18,7 @@ function PrescriptionModal({ appointmentId, isDoctor, onSuccess, onClose }) {
     const token = localStorage.getItem("token");
     if (!token || !appointmentId) return;
 
-    fetch(`http://localhost:5000/api/prescriptions/appointment/${appointmentId}`, {
+    fetch(`http://localhost:5001/api/prescriptions/appointment/${appointmentId}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then((res) => (res.ok ? res.json() : null))
@@ -65,7 +65,7 @@ function PrescriptionModal({ appointmentId, isDoctor, onSuccess, onClose }) {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/prescriptions", {
+      const res = await fetch("http://localhost:5001/api/prescriptions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -56,7 +56,7 @@ function ChatVideoCall() {
     setUser(parsedUser);
 
     // 1. Fetch Appointment Details & Verify Participant
-    fetch(`http://localhost:5000/api/appointments/${appointmentId}`, {
+    fetch(`http://localhost:5001/api/appointments/${appointmentId}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then((res) => (res.ok ? res.json() : null))
@@ -68,7 +68,7 @@ function ChatVideoCall() {
       .catch(() => {});
 
     // 2. Fetch Persisted Chat History from MongoDB
-    fetch(`http://localhost:5000/api/chat/${appointmentId}`, {
+    fetch(`http://localhost:5001/api/chat/${appointmentId}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then((res) => (res.ok ? res.json() : null))
@@ -80,7 +80,7 @@ function ChatVideoCall() {
       .catch((err) => console.log("Chat history fetch:", err));
 
     // 3. Initialize Socket.IO connection
-    socket = io("http://localhost:5000");
+    socket = io("http://localhost:5001");
 
     const roomId = `room_${appointmentId}`;
     socket.emit("join-room", roomId);

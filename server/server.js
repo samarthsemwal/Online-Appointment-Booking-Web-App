@@ -4,11 +4,16 @@ const cors = require("cors");
 const http = require("http");
 const dotenv = require("dotenv");
 const { Server } = require("socket.io");
+const bcrypt = require("bcryptjs");
 
 dotenv.config();
 
 // Model Imports
 const ChatMessage = require("./models/ChatMessage");
+const User = require("./models/User");
+const Doctor = require("./models/Doctor");
+const Patient = require("./models/Patient");
+const Appointment = require("./models/Appointment");
 
 // Route Imports
 const authRoutes = require("./routes/authRoutes");
@@ -35,27 +40,157 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-/* MongoDB Connection (Only auto-connect if not running Jest tests) */
+/* MongoDB Connection with Smart Auto-Fallback */
 const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/doctorApp";
 
-if (process.env.NODE_ENV !== "test") {
-  mongoose
-    .connect(MONGO_URI)
-    .then(async () => {
-      console.log("✓ MongoDB Connected Successfully");
-      try {
-        const Appointment = require("./models/Appointment");
-        await Appointment.syncIndexes();
-        console.log("✓ Database-level Compound Unique Indexes Synced");
-      } catch (idxErr) {
-        console.log("Index sync notice:", idxErr.message);
+async function seedDefaultDataIfEmpty() {
+  try {
+    const docCount = await Doctor.countDocuments();
+    if (docCount === 0) {
+      console.log("🌱 Auto-seeding initial doctors and test accounts...");
+      const hashedPassword = await bcrypt.hash("password123", 10);
+
+      const doctorsList = [
+        {
+          name: "Dr. Satish Malia",
+          email: "satish@doc.com",
+          speciality: "General Physician",
+          qualifications: "MBBS, MD (General Medicine)",
+          experienceYears: 10,
+          consultationFee: 500,
+          location: "New Delhi",
+          rating: 4.9,
+          img: "/images/doc1.png"
+        },
+        {
+          name: "Dr. Sarah Johnson",
+          email: "sarah@doc.com",
+          speciality: "Dermatologist",
+          qualifications: "MBBS, MD (Dermatology)",
+          experienceYears: 8,
+          consultationFee: 600,
+          location: "Mumbai",
+          rating: 4.8,
+          img: "/images/doc2.png"
+        },
+        {
+          name: "Dr. David Miller",
+          email: "david@doc.com",
+          speciality: "Cardiologist",
+          qualifications: "MBBS, MD, DM (Cardiology)",
+          experienceYears: 14,
+          consultationFee: 800,
+          location: "Bengaluru",
+          rating: 5.0,
+          img: "/images/doc3.png"
+        },
+        {
+          name: "Dr. Emma Wilson",
+          email: "emma@doc.com",
+          speciality: "Pediatrician",
+          qualifications: "MBBS, MD (Pediatrics)",
+          experienceYears: 9,
+          consultationFee: 550,
+          location: "Noida",
+          rating: 4.9,
+          img: "/images/doc4.png"
+        },
+        {
+          name: "Dr. Michael Brown",
+          email: "michael@doc.com",
+          speciality: "Neurologist",
+          qualifications: "MBBS, MD, DM (Neurology)",
+          experienceYears: 12,
+          consultationFee: 750,
+          location: "Gurugram",
+          rating: 4.7,
+          img: "/images/doc5.png"
+        },
+        {
+          name: "Dr. Olivia Taylor",
+          email: "olivia@doc.com",
+          speciality: "Gynecologist",
+          qualifications: "MBBS, MS (OBG)",
+          experienceYears: 7,
+          consultationFee: 650,
+          location: "New Delhi",
+          rating: 4.9,
+          img: "/images/doc6.png"
+        }
+      ];
+
+      for (const doc of doctorsList) {
+        const u = await User.create({
+          name: doc.name,
+          email: doc.email,
+          password: hashedPassword,
+          role: "doctor",
+          phone: "+91 98765 43210"
+        });
+        await Doctor.create({
+          userId: u._id,
+          speciality: doc.speciality,
+          qualifications: doc.qualifications,
+          experienceYears: doc.experienceYears,
+          consultationFee: doc.consultationFee,
+          location: doc.location,
+          rating: doc.rating,
+          img: doc.img
+        });
       }
-    })
-    .catch((err) => {
-      console.error("MongoDB Connection Warning:", err.message);
-      console.log("Server will run; please ensure MongoDB is running at", MONGO_URI);
-    });
+
+      // Seed Patient test account
+      const p = await User.create({
+        name: "Rahul Sharma",
+        email: "rahul@patient.com",
+        password: hashedPassword,
+        role: "patient",
+        phone: "+91 98111 22334"
+      });
+      await Patient.create({
+        userId: p._id,
+        age: 32,
+        gender: "Male",
+        bloodGroup: "B+",
+        medicalHistory: ["Mild hypertension"]
+      });
+
+      console.log("✓ Default database seeded successfully!");
+    }
+  } catch (seedErr) {
+    console.log("Seeding note:", seedErr.message);
+  }
 }
+
+async function connectDB() {
+  if (process.env.NODE_ENV === "test") return;
+
+  try {
+    // Try connecting with a 4s timeout
+    await mongoose.connect(MONGO_URI, { serverSelectionTimeoutMS: 4000 });
+    console.log("✓ Connected to MongoDB Atlas / Remote Cluster Successfully");
+    await Appointment.syncIndexes();
+    await seedDefaultDataIfEmpty();
+  } catch (err) {
+    console.warn("⚠️ MongoDB Atlas connection timed out (IP whitelist / network).");
+    console.log("⚡ Seamlessly Activating Built-in In-Memory MongoDB Engine...");
+
+    try {
+      const { MongoMemoryServer } = require("mongodb-memory-server");
+      const memoryMongo = await MongoMemoryServer.create();
+      const memoryUri = memoryMongo.getUri();
+
+      await mongoose.connect(memoryUri);
+      console.log("✓ In-Memory MongoDB Engine running seamlessly at:", memoryUri);
+      await Appointment.syncIndexes();
+      await seedDefaultDataIfEmpty();
+    } catch (memErr) {
+      console.error("Failed to start in-memory database:", memErr.message);
+    }
+  }
+}
+
+connectDB();
 
 /* Health Check API */
 app.get("/api/health", (req, res) => {
@@ -164,8 +299,8 @@ app.use((err, req, res, next) => {
   });
 });
 
-/* Server Startup (Only when not in test mode) */
-const PORT = process.env.PORT || 5000;
+/* Server Startup */
+const PORT = process.env.PORT || 5001;
 if (process.env.NODE_ENV !== "test") {
   server.listen(PORT, () => {
     console.log(`=================================================`);

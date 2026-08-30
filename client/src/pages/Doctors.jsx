@@ -38,7 +38,7 @@ function Doctors() {
 
   useEffect(() => {
     const specialityQuery = selectedSpeciality !== "All" ? `?speciality=${encodeURIComponent(selectedSpeciality)}` : "";
-    fetch(`http://localhost:5000/api/doctors${specialityQuery}`)
+    fetch(`http://localhost:5001/api/doctors${specialityQuery}`)
       .then((res) => {
         if (!res.ok) throw new Error("Network response was not ok");
         return res.json();
