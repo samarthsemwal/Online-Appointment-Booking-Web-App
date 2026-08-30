@@ -1,60 +1,124 @@
-# 🩺 DocApp Pro - Full-Stack Appointment & Telemedicine Platform
-
-Welcome to **DocApp Pro**, a fully functional MERN (MongoDB, Express, React, NodeJS) stack application designed to seamlessly connect patients with doctors. It's more than just a booking system—it's a complete telemedicine platform supporting real-time chat and WebRTC video consultations!
-
-## ✨ Features
-
-- **Dual-role Authentication:** Secure and distinct onboarding for both `Doctors` and `Patients`.
-- **Dynamic Doctor Dashboard:** Doctors have a dedicated dashboard to view, manage, and engage with their upcoming patient consultations.
-- **Smart Appointment Booking:** Patients can browse a dynamic list of specialized doctors, check their fees/locations, and book an appointment with a smooth UI.
-- **Real-Time Video Calling:** Built using native WebRTC! Patients and doctors can jump into a peer-to-peer secure video room right from their appointment dashboard. No aggressive third-party APIs required.
-- **Live Text Chat:** Integrated **Socket.IO** allows instant, real-time messaging before and during the video call so nobody misses a beat.
-- **Premium Aesthetics:** Featuring a sleek glassmorphism design, clean micro-interactions, responsive hover states, and gorgeous Toast notifications powered by `react-toastify`.
+# 🩺 iCom Pro – Full-Stack Telemedicine & AI Diagnostics Platform
+**React.js • Node.js • Express.js • MongoDB (7 Collections) • FastAPI • Socket.io • WebRTC • Razorpay**
 
 ---
 
-## 🚀 Tech Stack
+## 🌟 Overview
 
-- **Frontend:** React.js, React Router v7, React Toastify, Custom CSS Overhaul
-- **Backend:** Node.js, Express.js
-- **Database:** MongoDB, Mongoose
-- **Real-Time Comm:** Socket.IO, WebRTC Native APIs
+**iCom Pro** is a full-stack telemedicine and clinical AI diagnostics ecosystem designed for high-concurrency patient consultations, zero double-booking, encrypted peer-to-peer WebRTC video, real-time persisted Socket.io chat, and instant cardiovascular risk assessment.
 
 ---
 
-## 🛠️ Getting Started Locally
+## ✨ Key Architectural Highlights
 
-Running the app locally is super easy! You'll need two separate terminal windows—one for the backend server and one for the frontend client.
+### 1. 🗄️ Referenced 7-Collection MongoDB Schema & Compound Indexing
+- **7 Referenced Collections:**
+  - `User`: Central identity & authentication (patients, doctors, administrators) with `bcryptjs` hashed passwords.
+  - `Doctor`: Referenced doctor profiles containing medical credentials, hospital affiliations, consultation fees, and available time slots.
+  - `Patient`: Referenced patient medical history, allergies, emergency contacts, and vital stats.
+  - `Appointment`: Central booking entity referencing patient, doctor, payment, and prescription records.
+  - `Payment`: Financial records containing Razorpay order/payment IDs, HMAC-SHA256 signatures, and captured status.
+  - `Prescription`: Clinical records with structured medicines, dosages, diagnostic advice, and follow-ups.
+  - `ChatMessage`: Consultation chat messages persistently stored in MongoDB with roomId/appointmentId indices.
+- **Database-Level Double-Booking Prevention:**
+  - Compound unique partial index:
+    ```javascript
+    AppointmentSchema.index(
+      { doctorId: 1, date: 1, timeSlot: 1 },
+      { unique: true, partialFilterExpression: { status: { $in: ["pending", "confirmed", "completed"] } } }
+    );
+    ```
+  - Rejects duplicate booking race conditions at the database engine level (`11000 duplicate key error` -> `409 Conflict`).
+- **Automated Concurrency Validation:**
+  - Verified with automated **Jest & Supertest** concurrency test suites firing simultaneous parallel booking requests.
 
-### 1. Database Setup
-Make sure you have MongoDB installed and running locally on the default port (`mongodb://127.0.0.1:27017/doctorApp`). 
-*(Want some instant mock data? Navigate to `/server` and run `node seed.js` to populate the database with several detailed doctors so you don't have to create them from scratch!)*
+---
 
-### 2. Start the Backend Server
-Open your terminal and boot up the NodeJS API and Socket.IO signaling server.
+### 2. 🔐 JWT Authentication & Razorpay HMAC-SHA256 Verification
+- **Identity-Spoofing Elimination:**
+  - URL-parameter identity vulnerabilities eliminated; all authorization is derived strictly from server-verified signed JWT tokens (`req.user.id`).
+- **Razorpay Payments with Server-Side HMAC-SHA256:**
+  - Server generates signed Razorpay orders (`POST /api/payments/create-order`).
+  - Server verifies signatures via constant-time HMAC-SHA256 hash calculation:
+    ```javascript
+    crypto.createHmac('sha256', secret).update(`${order_id}|${payment_id}`).digest('hex')
+    ```
+
+---
+
+### 3. 🤖 Persistent FastAPI Heart Disease Risk Microservice (86.81% Test Accuracy)
+- **Zero Subprocess Overhead:**
+  - Extracted from legacy per-request python `child_process` spawns into a persistent, in-memory **FastAPI microservice** on port `8000`.
+- **Verified Clinical Model:**
+  - Trained on the Cleveland Heart Disease Dataset using Logistic Regression with `StandardScaler` (`test_size=0.3`, `random_state=42`), achieving **86.81% test accuracy**.
+- **13 Clinical Biomarkers Evaluated:**
+  - Age, Sex, Chest Pain (cp), Resting Blood Pressure (trestbps), Cholesterol (chol), Fasting Blood Sugar (fbs), Resting ECG (restecg), Max Heart Rate (thalach), Exercise Induced Angina (exang), ST Depression (oldpeak), ST Slope (slope), Major Vessels (ca), Thalassemia (thal).
+
+---
+
+### 4. 📹 Encrypted WebRTC Video Consultation & Persisted Socket.io Chat
+- **1-on-1 WebRTC Video Consultation:**
+  - Native browser peer-to-peer connection with local Picture-in-Picture feed, remote HD stream, audio mute, and camera toggles.
+- **Persisted MongoDB Chat History:**
+  - Messages sent in consultation rooms are persisted to MongoDB and retrieved on room entrance (`GET /api/chat/:appointmentId`).
+- **Digital Prescription Builder:**
+  - In-consultation clinical prescription builder allowing doctors to write prescriptions and patients to view/print them.
+
+---
+
+## 🚀 Quick Start Guide
+
+### Prerequisites
+- Node.js (v18+)
+- Python 3.9+
+- MongoDB running locally on default port (`mongodb://127.0.0.1:27017/doctorApp`)
+
+---
+
+### 1. Boot the FastAPI Heart Disease Microservice (Port 8000)
+```bash
+cd heartdisease
+source venv/bin/activate    # On Windows: venv\Scripts\activate
+python train_model.py       # Trains and verifies 86.81% accuracy
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+---
+
+### 2. Boot the Node.js API & Socket.io Server (Port 5000)
 ```bash
 cd server
-npm install 
+npm install
+node seed.js                # Seeds 7 collections with doctors, patients, and initial chats
 npm start
 ```
-*The backend will run on `http://localhost:5000`*
 
-### 3. Start the Frontend Client
-In a new terminal tab, start up the React application.
+---
+
+### 3. Start the React Frontend Client (Port 3000)
 ```bash
 cd client
 npm install
 npm start
 ```
-*The frontend will run on `http://localhost:3000`*
 
 ---
 
-## 💡 How To Test Walkthrough
-1. **As a Patient:** Register a brand new account as a Patient. Head over to the "Doctors" tab to find a specialist you like the look of. Pick a date and time, and click book! Head to "My Appointments" to see it listed. 
-2. **As a Doctor:** Log out, and either use the `Register` page to create a custom Doctor profile, or log into one of the seeded defaults (e.g. `satish@doc.com` | `password123`). Navigate to your **Dashboard**.
-3. **Connect!** From either the Doctor's Dashboard or the Patient's Appointments page, tap the **"Join Call & Chat"** action button. This opens the WebRTC signaling room where you can launch your camera and start chatting!
+### 4. Run Automated Concurrency Tests
+```bash
+cd server
+npm test
+```
+Runs Jest & Supertest automated concurrency tests validating database-level anti-double-booking indexing.
 
 ---
 
-*Built with ❤️ for modern telemedicine.*
+## 👥 Demo Test Accounts
+
+| Role | Email | Password | Speciality |
+|---|---|---|---|
+| **Doctor** | `satish@doc.com` | `password123` | General Physician |
+| **Doctor** | `david@doc.com` | `password123` | Cardiologist |
+| **Doctor** | `sarah@doc.com` | `password123` | Dermatologist |
+| **Patient** | `rahul@patient.com` | `password123` | Patient Profile |
+| **Patient** | `priya@patient.com` | `password123` | Patient Profile |
