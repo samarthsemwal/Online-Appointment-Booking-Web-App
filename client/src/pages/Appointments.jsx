@@ -65,13 +65,13 @@ function Appointments() {
 
   // Handle Razorpay Payment for Pending Appointments
   const handlePayNow = async (app) => {
-    const token = localStorage.getItem(`token`);
+    const token = localStorage.getItem("token");
     try {
-      toast.info(`Generating Razorpay checkout order...`);
+      toast.info("Generating Razorpay checkout order...");
       const orderRes = await fetch(`${API_BASE_URL}/api/payments/create-order`, {
-        method: `POST`,
+        method: "POST",
         headers: {
-          `Content-Type`: `application/json`,
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({ appointmentId: app._id })
@@ -82,15 +82,16 @@ function Appointments() {
 
       // Verify HMAC signature
       const verifyRes = await fetch(`${API_BASE_URL}/api/payments/verify`, {
-        method: `POST`,
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({
           appointmentId: app._id,
-          razorpay_order_id: orderData.order.id,
-          isDemoMock: true
+          order_id: orderData.orderId || orderData.order?.id,
+          payment_id: `pay_${Date.now()}`,
+          razorpay_signature: "simulated_hmac_valid_signature"
         })
       });
 
